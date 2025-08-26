@@ -3,7 +3,7 @@
     public record PositionName
     {
         private const int MIN_LENGTH = 3;
-        private const int MAX_LENGTH = 150;
+        private const int MAX_LENGTH = 100;
 
         public string Name { get; }
 

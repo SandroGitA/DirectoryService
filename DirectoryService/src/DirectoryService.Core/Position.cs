@@ -2,9 +2,11 @@
 {
     public class Position
     {
+        private const int MAX_LENGTH = 1000;
+
         public Guid Id { get; private set; }
 
-        public PositionName Name { get; private set; }
+        public PositionName Name { get; }
 
         public string? Description { get; private set; }
 
@@ -14,7 +16,7 @@
 
         public DateTime UpdatedAt { get; private set; }
 
-        public List<Department> Departments { get; private set; } = [];
+        public IReadOnlyList<Department> Departments { get; private set; } = [];
 
         private Position(PositionName name, string? description, bool isActive)
         {
@@ -29,9 +31,9 @@
 
         public static Position Create(PositionName name, string description, bool isActive)
         {
-            if (name.Name.Length < 3 || name.Name.Length > 150)
+            if (description.Length >= MAX_LENGTH)
             {
-                return null;
+                throw new ArgumentException($"Description must be less than {MAX_LENGTH} characters");
             }
 
             return new Position(name, description, isActive);
