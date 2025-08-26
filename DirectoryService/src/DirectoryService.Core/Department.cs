@@ -2,32 +2,35 @@
 {
     public class Department
     {
-        public Guid Id { get; set; }
+        private const int MIN_LENGTH = 3;
+        private const int MAX_LENGTH = 150;
 
-        public DepartmentName Name { get; set; }
+        public Guid Id { get; private set; }
 
-        public string Identifier { get; set; }
+        public DepartmentName Name { get; }
 
-        public Guid? ParentId { get; set; }
+        public string Identifier { get; private set; }
 
-        public string Path { get; set; }
+        public Guid? ParentId { get; private set; }
 
-        public short Depth { get; set; }
+        public string Path { get; private set; }
 
-        public bool IsActive { get; set; }
+        public short Depth { get; private set; }
 
-        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; private set; }
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; private set; }
 
-        public List<Location> Locations { get; set; }
+        public DateTime UpdatedAt { get; private set; }
 
-        public List<Position> Positions { get; set; } = [];
+        public List<Location> Locations { get; private set; }
 
-        private Department(string name, string identifier, Guid? parentId, string path, short depth, bool isActive)
+        public List<Position> Positions { get; private set; } = [];
+
+        private Department(DepartmentName name, string identifier, Guid? parentId, string path, short depth, bool isActive)
         {
             Id = Guid.NewGuid();
-            Name = new DepartmentName(name);
+            Name = name;
             Identifier = identifier;
             ParentId = parentId ?? Guid.Empty;
             Path = path;
@@ -38,9 +41,9 @@
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public static Department Create(string name, string identifier, Guid? parentId, string path, short depth, bool isActive)
+        public static Department Create(DepartmentName name, string identifier, Guid? parentId, string path, short depth, bool isActive)
         {
-            if (name.Length < 3 || name.Length > 150)
+            if (name.Name.Length < 3 || name.Name.Length > 150)
             {
                 return null;
             }

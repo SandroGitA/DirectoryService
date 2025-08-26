@@ -2,26 +2,29 @@
 {
     public class Location
     {
-        public Guid Id { get; set; }
+        private const int MIN_LENGTH = 3;
+        private const int MAX_LENGTH = 150;
 
-        public LocationName Name { set; get; }
+        public Guid Id { get; private set; }
 
-        public string Address { get; set; }
+        public LocationName Name { set; private get; }
 
-        public string Timezone { get; set; }
+        public string Address { get; private set; }
 
-        public bool IsActive { get; set; }
+        public string Timezone { get; private set; }
 
-        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; private set; }
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; private set; }
 
-        public List<Department> Departments { get; set; } = [];
+        public DateTime UpdatedAt { get; private set; }
 
-        private Location(string name, string address, string timezone, bool isActive)
+        public List<Department> Departments { get; private set; } = [];
+
+        private Location(LocationName name, string address, string timezone, bool isActive)
         {
             Id = Guid.NewGuid();
-            Name = new LocationName(name);
+            Name = name;
             Address = address;
             Timezone = timezone;
             IsActive = isActive;
@@ -30,8 +33,13 @@
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public static Location Create(string name, string address, string timezone, bool isActive)
+        public static Location Create(LocationName name, string address, string timezone, bool isActive)
         {
+            if (name.Name.Length < MIN_LENGTH || name.Name.Length > MAX_LENGTH)
+            {
+                return null;
+            }
+
             return new Location(name, address, timezone, isActive);
         }
     }

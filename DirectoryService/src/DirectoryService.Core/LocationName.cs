@@ -1,12 +1,25 @@
 ﻿namespace DirectoryService.Core
 {
-    public class LocationName
+    public record LocationName
     {
-        public string Name { get; set; }
+        private const int MIN_LENGTH = 3;
+        private const int MAX_LENGTH = 150;
 
-        public LocationName(string name)
+        public string Name { get; }
+
+        private LocationName(string name)
         {
-            this.Name = name;
+            Name = name;
+        }
+
+        public static LocationName Create(string name)
+        {
+            if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
+            {
+                return null;
+            }
+
+            return new LocationName(name);
         }
     }
 }

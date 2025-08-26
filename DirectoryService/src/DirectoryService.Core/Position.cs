@@ -2,29 +2,39 @@
 {
     public class Position
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
 
-        public PositionName Name { get; set; }
+        public PositionName Name { get; private set; }
 
-        public string? Description { get; set; }
+        public string? Description { get; private set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; private set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; private set; }
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; private set; }
 
-        public List<Department> Departments { get; set; } = [];
+        public List<Department> Departments { get; private set; } = [];
 
-        public Position(string name, string? description, bool isActive)
+        private Position(PositionName name, string? description, bool isActive)
         {
             Id = Guid.NewGuid();
-            Name = new PositionName(name);
+            Name = name;
             Description = description;
             IsActive = isActive;
 
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.Now;
+        }
+
+        public static Position Create(PositionName name, string description, bool isActive)
+        {
+            if (name.Name.Length < 3 || name.Name.Length > 150)
+            {
+                return null;
+            }
+
+            return new Position(name, description, isActive);
         }
     }
 }
