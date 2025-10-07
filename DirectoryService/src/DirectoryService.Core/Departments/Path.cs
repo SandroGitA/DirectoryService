@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Core
+﻿namespace DirectoryService.Core.Departments
 {
     public record Path
     {

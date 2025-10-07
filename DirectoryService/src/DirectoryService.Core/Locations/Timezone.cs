@@ -1,12 +1,12 @@
-﻿namespace DirectoryService.Core
+﻿namespace DirectoryService.Core.Locations
 {
     public record Timezone
     {
         private const int MIN_LENGTH = 3;
         private const int MAX_LENGTH = 30;
 
-        public string Iana { get; }
-
+        public string Iana { get; }        
+        
         private Timezone(string iana)
         {
             Iana = iana;

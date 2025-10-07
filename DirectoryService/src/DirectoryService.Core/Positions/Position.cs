@@ -1,4 +1,6 @@
-﻿namespace DirectoryService.Core
+﻿using DirectoryService.Core.Departments;
+
+namespace DirectoryService.Core.Positions
 {
     public class Position
     {
@@ -18,6 +20,8 @@
 
         public IReadOnlyList<Department> Departments { get; private set; } = [];
 
+        private Position() { }
+        
         private Position(PositionName name, string? description, bool isActive)
         {
             Id = Guid.NewGuid();

@@ -1,4 +1,6 @@
-﻿namespace DirectoryService.Core
+﻿using DirectoryService.Core.Departments;
+
+namespace DirectoryService.Core.Locations
 {
     public class Location
     {
@@ -18,6 +20,8 @@
 
         public IReadOnlyList<Department> Departments { get; private set; } = [];
 
+        private Location() { }
+        
         private Location(LocationName name, Address address, Timezone timezone, bool isActive)
         {
             Id = Guid.NewGuid();

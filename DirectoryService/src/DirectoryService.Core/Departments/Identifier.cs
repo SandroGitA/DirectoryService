@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DirectoryService.Core
+namespace DirectoryService.Core.Departments
 {
     public class Identifier
     {

@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Core
+﻿using DirectoryService.Core.Locations;
+using DirectoryService.Core.Positions;
+
+namespace DirectoryService.Core.Departments
 {
     public class Department
     {        
@@ -23,6 +26,8 @@
         public IReadOnlyList<Location> Locations { get; private set; } = [];
 
         public IReadOnlyList<Position> Positions { get; private set; } = [];
+
+        private Department() { }        
 
         private Department(DepartmentName name, Identifier identifier,
             Guid? parentId, Path path, short depth, bool isActive)
