@@ -23,9 +23,9 @@ namespace DirectoryService.Core.Departments
 
         public DateTime UpdatedAt { get; private set; }
 
-        public IReadOnlyList<Location> Locations { get; private set; } = [];
+        public IReadOnlyList<DepartmentLocation> Locations { get; private set; } = [];
 
-        public IReadOnlyList<Position> Positions { get; private set; } = [];
+        public IReadOnlyList<DepartmentPosition> Positions { get; private set; } = [];
 
         private Department() { }        
 

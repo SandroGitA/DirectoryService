@@ -18,7 +18,7 @@ namespace DirectoryService.Core.Locations
 
         public DateTime UpdatedAt { get; private set; }
 
-        public IReadOnlyList<Department> Departments { get; private set; } = [];
+        public IReadOnlyList<DepartmentLocation> Departments { get; private set; } = [];
 
         private Location() { }
         
