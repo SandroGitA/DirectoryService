@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Core
+﻿namespace DirectoryService.Core.Locations
 {
     public record Address
     {
@@ -15,9 +15,8 @@
 
         public int Room { get; }
 
-        public int ZipCode { get; }
-
-
+        public int ZipCode { get; }       
+        
         private Address(string region, string city, string street, int houseNumber, int room, int zipCode)
         {
             Region = region;

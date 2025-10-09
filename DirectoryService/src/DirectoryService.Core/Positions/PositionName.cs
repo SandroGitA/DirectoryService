@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Core
+﻿namespace DirectoryService.Core.Positions
 {
     public record PositionName
     {
@@ -9,9 +9,9 @@
 
         private PositionName(string name)
         {
-            this.Name = name;
-        }
-
+            Name = name;
+        }        
+        
         public static PositionName Create(string name)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)

@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Core
+﻿namespace DirectoryService.Core.Locations
 {
     public record LocationName
     {
