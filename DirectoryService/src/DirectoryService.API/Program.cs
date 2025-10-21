@@ -1,4 +1,7 @@
+using DirectoryService.Application.Locations;
+using DirectoryService.Contracts;
 using DirectoryService.Infrastructure;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,10 @@ builder.Services.AddDbContext<DirectoryServiceDbContext>(options =>
 {
     options.UseNpgsql(dSServiceConnectionString.Value);
 });
+
+builder.Services.AddScoped<IValidator<CreateLocationDto>, CreateLocationValidator>();
+builder.Services.AddScoped<ILocationsService, LocationsService>();
+builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
 
 var app = builder.Build();
 

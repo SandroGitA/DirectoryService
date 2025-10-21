@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Contracts;
 using DirectoryService.Core.Locations;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Address = DirectoryService.Core.Locations.Address;
 using Timezone = DirectoryService.Core.Locations.Timezone;
@@ -10,15 +11,19 @@ namespace DirectoryService.Application.Locations
     {
         public readonly ILocationsRepository locationRepository;
         public readonly ILogger<LocationsService> logger;
+        public readonly IValidator<CreateLocationDto> validator;
 
-        public LocationsService(ILocationsRepository locationRepository, ILogger<LocationsService> logger)
+        public LocationsService(ILocationsRepository locationRepository,
+            ILogger<LocationsService> logger,
+            IValidator<CreateLocationDto> validationRules)
         {
             this.locationRepository = locationRepository;
             this.logger = logger;
+            this.validator = validationRules;
         }
         public async Task<Guid> CreateLocation(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
         {
-            var validate = await CreateLocationValidator(createLocationDto);
+            var valudate = await validator.ValidateAsync(createLocationDto);
 
             var locationName = LocationName.Create(createLocationDto.Name);
             var address = Address.Create(createLocationDto.Address.Name,
