@@ -21,7 +21,7 @@ namespace DirectoryService.Application.Locations
             this.logger = logger;
             this.validator = validationRules;
         }
-        public async Task<Guid> CreateLocation(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
+        public async Task<Guid> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
         {
             var valudate = await validator.ValidateAsync(createLocationDto);
 
@@ -36,7 +36,7 @@ namespace DirectoryService.Application.Locations
 
             var location = Location.Create(locationName, address, timezone, true);
 
-            var locationId = await locationRepository.CreateLocation(location, cancellationToken);
+            var locationId = await locationRepository.Add(location, cancellationToken);
 
             return locationId;
         }

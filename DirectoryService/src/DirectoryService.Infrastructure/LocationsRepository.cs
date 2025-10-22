@@ -15,7 +15,7 @@ namespace DirectoryService.Infrastructure
             this.dbContext = directoryServiceDbContext;
         }
 
-        public async Task<Guid> CreateLocation(Location location, CancellationToken cancellationToken)
+        public async Task<Guid> Add(Location location, CancellationToken cancellationToken)
         {
             var result = await dbContext.AddAsync(location);
             await dbContext.SaveChangesAsync();

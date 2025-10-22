@@ -20,7 +20,7 @@ namespace DirectoryService.API.Controllers
         [Route("locations")]
         public async Task<Guid> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
         {
-            var locationId = await locationService.CreateLocation(createLocationDto, cancellationToken);
+            var locationId = await locationService.Create(createLocationDto, cancellationToken);
             return locationId;
         }
     }
