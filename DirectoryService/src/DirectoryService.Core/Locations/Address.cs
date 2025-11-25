@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Core.Locations
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Core.Locations
 {
     public record Address
     {
@@ -15,8 +18,8 @@
 
         public int Room { get; }
 
-        public int ZipCode { get; }       
-        
+        public int ZipCode { get; }
+
         private Address(string region, string city, string street, int houseNumber, int room, int zipCode)
         {
             Region = region;
@@ -27,11 +30,11 @@
             ZipCode = zipCode;
         }
 
-        public static Address Create(string name, string city, string street, int houseNumber, int room, int zipCode)
+        public static Result<Address, Error> Create(string name, string city, string street, int houseNumber, int room, int zipCode)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
             {
-                throw new ArgumentException("Name does not match the condition");
+                return Error.Validation(null, "Name does not match the condition", null);
             }
 
             return new Address(name, city, street, houseNumber, room, zipCode);

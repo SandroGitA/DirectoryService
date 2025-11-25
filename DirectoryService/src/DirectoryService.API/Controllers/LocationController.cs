@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Locations;
+﻿using DirectoryService.API.ResponseExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,10 +19,13 @@ namespace DirectoryService.API.Controllers
 
         [HttpPost]
         [Route("locations")]
-        public async Task<Guid> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
+        [ProducesResponseType<Envelope<string>>(200)]
+        [ProducesResponseType<Envelope>(400)]
+        [ProducesResponseType<Envelope>(405)]
+        [ProducesResponseType<Envelope>(500)]
+        public async Task<EndpointResult<Guid>> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
         {
-            var locationId = await locationService.Create(createLocationDto, cancellationToken);
-            return locationId;
+            return await locationService.Create(createLocationDto, cancellationToken);
         }
     }
 }
