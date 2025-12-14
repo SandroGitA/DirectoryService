@@ -57,14 +57,19 @@ namespace DirectoryService.Application.Locations
 
             if (!timezoneResult.IsSuccess)
             {
-                return locationNameResult.Error.ToErrors();
+                return timezoneResult.Error.ToErrors();
             }
 
             var location = Location.Create(locationNameResult.Value, addressResult.Value, timezoneResult.Value, true);
 
             var locationId = await locationRepository.Add(location, cancellationToken);
 
-            return locationId;
+            if (!locationId.IsSuccess)
+            {
+                return locationId.Error.ToErrors();
+            }
+
+            return locationId.Value;
         }
     }
 }
