@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Core.Locations
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Core.Locations
 {
     public record LocationName
     {
@@ -12,11 +15,11 @@
             Name = name;
         }
 
-        public static LocationName Create(string name)
+        public static Result<LocationName, Error> Create(string name)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
             {
-                return null;
+                return Error.Validation(null, "Name does not match the condition", null);
             }
 
             return new LocationName(name);

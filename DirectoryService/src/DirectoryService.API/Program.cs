@@ -1,3 +1,4 @@
+using DirectoryService.API.Middlewares;
 using DirectoryService.Application.Locations;
 using DirectoryService.Contracts;
 using DirectoryService.Infrastructure;
@@ -9,11 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
-var dSServiceConnectionString = builder.Configuration.GetSection("DSServiceDb");
+var dsServiceConnectionString = builder.Configuration.GetSection("DSServiceDb");
 
 builder.Services.AddDbContext<DirectoryServiceDbContext>(options =>
 {
-    options.UseNpgsql(dSServiceConnectionString.Value);
+    options.UseNpgsql(dsServiceConnectionString.Value);
 });
 
 builder.Services.AddScoped<IValidator<CreateLocationDto>, CreateLocationValidator>();
@@ -21,6 +22,8 @@ builder.Services.AddScoped<ILocationsService, LocationsService>();
 builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
 
 var app = builder.Build();
+
+app.UseExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
 {

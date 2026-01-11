@@ -1,7 +1,10 @@
-﻿using DirectoryService.Contracts;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Extensions;
+using DirectoryService.Contracts;
 using DirectoryService.Core.Locations;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared;
 using Address = DirectoryService.Core.Locations.Address;
 using Timezone = DirectoryService.Core.Locations.Timezone;
 
@@ -15,30 +18,58 @@ namespace DirectoryService.Application.Locations
 
         public LocationsService(ILocationsRepository locationRepository,
             ILogger<LocationsService> logger,
-            IValidator<CreateLocationDto> validationRules)
+            IValidator<CreateLocationDto> validator)
         {
             this.locationRepository = locationRepository;
             this.logger = logger;
-            this.validator = validationRules;
+            this.validator = validator;
         }
-        public async Task<Guid> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
+        public async Task<Result<Guid, Errors>> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
         {
-            var valudate = await validator.ValidateAsync(createLocationDto);
+            var validationResult = await validator.ValidateAsync(createLocationDto, cancellationToken);
 
-            var locationName = LocationName.Create(createLocationDto.Name);
-            var address = Address.Create(createLocationDto.Address.Name,
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.ToErrors();
+                return errors;
+            }
+
+            var locationNameResult = LocationName.Create(createLocationDto.Name);
+
+            if (!locationNameResult.IsSuccess)
+            {
+                return locationNameResult.Error.ToErrors();
+            }
+
+            var addressResult = Address.Create(createLocationDto.Address.Name,
                 createLocationDto.Address.City,
                 createLocationDto.Address.Street,
                 createLocationDto.Address.HouseNumber,
                 createLocationDto.Address.Room,
                 createLocationDto.Address.ZipCode);
-            var timezone = Timezone.Create(createLocationDto.Timezone);
 
-            var location = Location.Create(locationName, address, timezone, true);
+            if (!addressResult.IsSuccess)
+            {
+                return addressResult.Error.ToErrors();
+            }
+
+            var timezoneResult = Timezone.Create(createLocationDto.Timezone);
+
+            if (!timezoneResult.IsSuccess)
+            {
+                return timezoneResult.Error.ToErrors();
+            }
+
+            var location = Location.Create(locationNameResult.Value, addressResult.Value, timezoneResult.Value, true);
 
             var locationId = await locationRepository.Add(location, cancellationToken);
 
-            return locationId;
+            if (!locationId.IsSuccess)
+            {
+                return locationId.Error.ToErrors();
+            }
+
+            return locationId.Value;
         }
     }
 }

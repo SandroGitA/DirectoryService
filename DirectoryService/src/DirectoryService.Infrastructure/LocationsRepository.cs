@@ -1,6 +1,8 @@
-﻿using DirectoryService.Application.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Core.Locations;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace DirectoryService.Infrastructure
 {
@@ -15,10 +17,18 @@ namespace DirectoryService.Infrastructure
             this.dbContext = directoryServiceDbContext;
         }
 
-        public async Task<Guid> Add(Location location, CancellationToken cancellationToken)
+        public async Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken)
         {
             var result = await dbContext.AddAsync(location);
-            await dbContext.SaveChangesAsync();
+
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure(null, ex.Message);
+            }
 
             return location.Id;
         }
