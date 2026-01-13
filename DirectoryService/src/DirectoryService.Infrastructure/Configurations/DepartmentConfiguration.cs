@@ -33,6 +33,20 @@ namespace DirectoryService.Infrastructure.Configurations
                     .HasMaxLength(LengthConstants.Length128)
                     .HasColumnName("name");
             });
+
+            builder.HasMany(d => d.Locations)
+                .WithOne()
+                .HasForeignKey(d=> d.DepartmentId);
+            
+            builder.HasMany(d => d.Positions)
+                .WithOne()
+                .HasForeignKey(d => d.DepartmentId);
+            
+            builder.HasMany(d=>d.ChildrenDepartments)
+                .WithOne()
+                .IsRequired(false)
+                .HasForeignKey(d=>d.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

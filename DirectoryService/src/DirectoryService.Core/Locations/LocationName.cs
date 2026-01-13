@@ -19,7 +19,7 @@ namespace DirectoryService.Core.Locations
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
             {
-                return Error.Validation(null, "Name does not match the condition", null);
+                return Error.Validation(null, "Name does not match the condition",nameof(name));
             }
 
             return new LocationName(name);

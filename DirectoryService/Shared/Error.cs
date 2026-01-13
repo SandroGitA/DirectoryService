@@ -9,7 +9,7 @@ namespace Shared
         public string Message { get; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public TypeError TypeError { get; set; }
+        public TypeError TypeError { get; }
 
         public string InvalidField { get; }
 

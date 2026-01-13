@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Core.Departments
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Core.Departments
 {
     public record DepartmentName
     {
@@ -12,12 +15,10 @@
             Name = name;
         }
 
-        public static DepartmentName Create(string name)
+        public static Result<DepartmentName, Error> Create(string name)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
-            {
-                throw new ArgumentException("Name does not match the condition");
-            }
+                return Error.Validation(null, "Name does not match the condition", nameof(name));
 
             return new DepartmentName(name);
         }

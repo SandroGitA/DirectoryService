@@ -1,8 +1,10 @@
-﻿using DirectoryService.Core.Departments;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Core.Departments;
+using Shared;
 
 namespace DirectoryService.Core.Positions
 {
-    public class Position
+    public sealed class Position
     {
         private const int MAX_LENGTH = 1000;
 
@@ -30,15 +32,13 @@ namespace DirectoryService.Core.Positions
             IsActive = isActive;
 
             CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
+            UpdatedAt = CreatedAt;
         }
 
-        public static Position Create(PositionName name, string description, bool isActive)
+        public static Result<Position, Error> Create(PositionName name, string description, bool isActive)
         {
             if (description.Length >= MAX_LENGTH)
-            {
-                throw new ArgumentException($"Description must be less than {MAX_LENGTH} characters");
-            }
+                return Error.Validation(null, $"Description must be less than {MAX_LENGTH} characters", nameof(description));
 
             return new Position(name, description, isActive);
         }

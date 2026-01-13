@@ -2,11 +2,11 @@
 
 namespace DirectoryService.Core.Locations
 {
-    public class Location
+    public sealed class Location
     {
         public Guid Id { get; private set; }
 
-        public LocationName Name { get; }
+        public LocationName Name { get; private set; }
 
         public Address Address { get; private set; }
 
@@ -31,7 +31,7 @@ namespace DirectoryService.Core.Locations
             IsActive = isActive;
 
             CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = CreatedAt;
         }
 
         public static Location Create(LocationName name, Address address, Timezone timezone, bool isActive)
