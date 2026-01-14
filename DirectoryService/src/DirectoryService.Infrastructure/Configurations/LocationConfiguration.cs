@@ -34,6 +34,10 @@ namespace DirectoryService.Infrastructure.Configurations
             {
                 lb.Property(l => l.Iana).HasMaxLength(LengthConstants.Length128).HasColumnName("iana");
             });
+
+            builder.HasMany(l => l.Departments)
+                .WithOne()
+                .HasForeignKey(l => l.LocationId);
         }
     }
 }

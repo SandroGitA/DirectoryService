@@ -19,7 +19,7 @@ namespace DirectoryService.Core.Locations
         {
             if (iana.Length < MIN_LENGTH || iana.Length > MAX_LENGTH)
             {
-                return Error.Validation(null, "Name does not match the condition", null);
+                return Error.Validation(null, "Name does not match the condition",nameof(iana));
             }
 
             return new Timezone(iana);

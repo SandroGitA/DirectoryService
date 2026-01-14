@@ -2,7 +2,7 @@
 
 namespace DirectoryService.Core.Departments
 {
-    public class DepartmentLocation
+    public sealed class DepartmentLocation
     {
         public Guid DepartmentId { get; private set; }
 

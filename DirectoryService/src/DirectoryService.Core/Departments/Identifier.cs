@@ -1,8 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Core.Departments
 {
-    public class Identifier
+    public sealed class Identifier
     {
         private const int MIN_LENGTH = 3;
         private const int MAX_LENGTH = 150;
@@ -15,19 +17,15 @@ namespace DirectoryService.Core.Departments
             Name = name;
         }
 
-        public static Identifier Create(string name)
+        public static Result<Identifier, Error> Create(string name)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
-            {
-                throw new ArgumentException("Name does not match the condition");
-            }
+                return Error.Validation(null, "Name does not match the condition", nameof(name));
 
             bool isMatch = Regex.IsMatch(name, RegEx);
 
             if (!isMatch)
-            {
-                throw new ArgumentException("Доступна только латиница");
-            }
+                return Error.Validation(null, "Name does not match the condition", nameof(name));
 
             return new Identifier(name);
         }

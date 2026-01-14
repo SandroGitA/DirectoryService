@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Core.Positions
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Core.Positions
 {
     public record PositionName
     {
@@ -12,12 +15,10 @@
             Name = name;
         }        
         
-        public static PositionName Create(string name)
+        public static Result<PositionName, Error> Create(string name)
         {
             if (name.Length < MIN_LENGTH || name.Length > MAX_LENGTH)
-            {
-                return null;
-            }
+                return Error.Validation(null, "Name does not match the condition", nameof(name));
 
             return new PositionName(name);
         }
