@@ -9,8 +9,9 @@ namespace DirectoryService.API.Controllers
     [Route("api/")]
     public class LocationController : ControllerBase
     {
-        public readonly ILocationsService locationService;
-        public readonly ILogger<LocationController> logger;
+        private readonly ILocationsService locationService;
+        private readonly ILogger<LocationController> logger;
+        
         public LocationController(ILocationsService locationService, ILogger<LocationController> logger)
         {
             this.locationService = locationService;
