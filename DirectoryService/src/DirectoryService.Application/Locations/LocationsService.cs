@@ -12,11 +12,12 @@ namespace DirectoryService.Application.Locations
 {
     public class LocationsService : ILocationsService
     {
-        public readonly ILocationsRepository locationRepository;
-        public readonly ILogger<LocationsService> logger;
-        public readonly IValidator<CreateLocationDto> validator;
+        private readonly ILocationsRepository locationRepository;
+        private readonly ILogger<LocationsService> logger;
+        private readonly IValidator<CreateLocationDto> validator;
 
-        public LocationsService(ILocationsRepository locationRepository,
+        public LocationsService(
+            ILocationsRepository locationRepository,
             ILogger<LocationsService> logger,
             IValidator<CreateLocationDto> validator)
         {
@@ -31,6 +32,8 @@ namespace DirectoryService.Application.Locations
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.ToErrors();
+                logger.LogError("Errors occurred: {@Errors}", errors);
+                
                 return errors;
             }
 
@@ -38,7 +41,10 @@ namespace DirectoryService.Application.Locations
 
             if (!locationNameResult.IsSuccess)
             {
-                return locationNameResult.Error.ToErrors();
+                var errors = locationNameResult.Error.ToErrors();
+                logger.LogError("Errors occurred: {@Errors}", errors);
+                
+                return errors;
             }
 
             var addressResult = Address.Create(createLocationDto.Address.Name,
@@ -50,14 +56,20 @@ namespace DirectoryService.Application.Locations
 
             if (!addressResult.IsSuccess)
             {
-                return addressResult.Error.ToErrors();
+                var errors = addressResult.Error.ToErrors();
+                logger.LogError("Errors occurred: {@Errors}", errors);
+                
+                return errors;
             }
 
             var timezoneResult = Timezone.Create(createLocationDto.Timezone);
 
             if (!timezoneResult.IsSuccess)
             {
-                return timezoneResult.Error.ToErrors();
+                var errors = timezoneResult.Error.ToErrors();
+                logger.LogError("Errors occurred: {@Errors}", errors);
+                
+                return errors;
             }
 
             var location = Location.Create(locationNameResult.Value, addressResult.Value, timezoneResult.Value, true);
@@ -66,9 +78,14 @@ namespace DirectoryService.Application.Locations
 
             if (!locationId.IsSuccess)
             {
-                return locationId.Error.ToErrors();
+                var errors = locationId.Error.ToErrors();
+                logger.LogError("Errors occurred: {@Errors}", errors);
+                
+                return errors;
             }
 
+            logger.LogInformation("Created location: {@Location}", location);
+            
             return locationId.Value;
         }
     }

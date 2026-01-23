@@ -1,41 +1,32 @@
-using DirectoryService.API.Middlewares;
-using DirectoryService.Application.Locations;
-using DirectoryService.Contracts;
-using DirectoryService.Infrastructure;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+using DirectoryService.API.Extensions;
+using Serilog;
+using Serilog.Events;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
-
-var dsServiceConnectionString = builder.Configuration.GetSection("DSServiceDb");
-
-builder.Services.AddDbContext<DirectoryServiceDbContext>(options =>
+try
 {
-    options.UseNpgsql(dsServiceConnectionString.Value);
-});
+    Log.Information("Starting up");
+    
+    var builder = WebApplication.CreateBuilder(args);
+    
+    //string environment = builder.Environment.EnvironmentName;
 
-builder.Services.AddScoped<IValidator<CreateLocationDto>, CreateLocationValidator>();
-builder.Services.AddScoped<ILocationsService, LocationsService>();
-builder.Services.AddScoped<ILocationsRepository, LocationsRepository>();
+    builder.Services.AddConfigurations(builder.Configuration);
 
-var app = builder.Build();
+    var app = builder.Build();
 
-app.UseExceptionMiddleware();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.Configure();
+    app.Run();
 }
-
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
+catch
+{
+    Log.Fatal("Application start-up failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

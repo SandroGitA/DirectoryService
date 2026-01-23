@@ -8,25 +8,29 @@ namespace DirectoryService.Infrastructure
 {
     public class LocationsRepository : ILocationsRepository
     {
-        public readonly ILogger<LocationsRepository> logger;
-        public readonly DirectoryServiceDbContext dbContext;
+        private readonly ILogger<LocationsRepository> logger;
+        private readonly DirectoryServiceDbContext directoryServiceDbContext;
 
-        public LocationsRepository(ILogger<LocationsRepository> logger, DirectoryServiceDbContext directoryServiceDbContext)
+        public LocationsRepository(
+            ILogger<LocationsRepository> logger, 
+            DirectoryServiceDbContext directoryServiceDbContext)
         {
             this.logger = logger;
-            this.dbContext = directoryServiceDbContext;
+            this.directoryServiceDbContext = directoryServiceDbContext;
         }
 
         public async Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken)
         {
-            var result = await dbContext.AddAsync(location);
+            var result = await directoryServiceDbContext.AddAsync(location);
 
             try
             {
-                await dbContext.SaveChangesAsync();
+                await directoryServiceDbContext.SaveChangesAsync();
+                logger.LogInformation("Successfully added location {@Location}", result.Entity.Id);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "An error occured while adding new location");
                 return Error.Failure(null, ex.Message);
             }
 
