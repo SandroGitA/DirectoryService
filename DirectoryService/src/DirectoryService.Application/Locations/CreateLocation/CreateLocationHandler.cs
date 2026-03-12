@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Extensions;
 using DirectoryService.Contracts;
 using DirectoryService.Core.Locations;
@@ -8,67 +9,69 @@ using Shared;
 using Address = DirectoryService.Core.Locations.Address;
 using Timezone = DirectoryService.Core.Locations.Timezone;
 
-namespace DirectoryService.Application.Locations
+namespace DirectoryService.Application.Locations.CreateLocation
 {
-    public class LocationsService : ILocationsService
+    public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
     {
         private readonly ILocationsRepository locationRepository;
-        private readonly ILogger<LocationsService> logger;
+        private readonly ILogger<CreateLocationHandler> logger;
         private readonly IValidator<CreateLocationDto> validator;
 
-        public LocationsService(
+        public CreateLocationHandler(
             ILocationsRepository locationRepository,
-            ILogger<LocationsService> logger,
+            ILogger<CreateLocationHandler> logger,
             IValidator<CreateLocationDto> validator)
         {
             this.locationRepository = locationRepository;
             this.logger = logger;
             this.validator = validator;
         }
-        public async Task<Result<Guid, Errors>> Create(CreateLocationDto createLocationDto, CancellationToken cancellationToken)
+
+        public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command,
+            CancellationToken cancellationToken)
         {
-            var validationResult = await validator.ValidateAsync(createLocationDto, cancellationToken);
+            var validationResult = await validator.ValidateAsync(command.CreateLocationDto, cancellationToken);
 
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-                
+
                 return errors;
             }
 
-            var locationNameResult = LocationName.Create(createLocationDto.Name);
+            var locationNameResult = LocationName.Create(command.CreateLocationDto.Name);
 
             if (!locationNameResult.IsSuccess)
             {
                 var errors = locationNameResult.Error.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-                
+
                 return errors;
             }
 
-            var addressResult = Address.Create(createLocationDto.Address.Name,
-                createLocationDto.Address.City,
-                createLocationDto.Address.Street,
-                createLocationDto.Address.HouseNumber,
-                createLocationDto.Address.Room,
-                createLocationDto.Address.ZipCode);
+            var addressResult = Address.Create(command.CreateLocationDto.Address.Name,
+                command.CreateLocationDto.Address.City,
+                command.CreateLocationDto.Address.Street,
+                command.CreateLocationDto.Address.HouseNumber,
+                command.CreateLocationDto.Address.Room,
+                command.CreateLocationDto.Address.ZipCode);
 
             if (!addressResult.IsSuccess)
             {
                 var errors = addressResult.Error.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-                
+
                 return errors;
             }
 
-            var timezoneResult = Timezone.Create(createLocationDto.Timezone);
+            var timezoneResult = Timezone.Create(command.CreateLocationDto.Timezone);
 
             if (!timezoneResult.IsSuccess)
             {
                 var errors = timezoneResult.Error.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-                
+
                 return errors;
             }
 
@@ -80,12 +83,12 @@ namespace DirectoryService.Application.Locations
             {
                 var errors = locationId.Error.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-                
+
                 return errors;
             }
 
             logger.LogInformation("Created location: {@Location}", location);
-            
+
             return locationId.Value;
         }
     }

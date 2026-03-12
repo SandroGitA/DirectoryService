@@ -1,4 +1,6 @@
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Locations;
+using DirectoryService.Application.Locations.CreateLocation;
 using DirectoryService.Contracts;
 using DirectoryService.Infrastructure;
 using FluentValidation;
@@ -24,7 +26,7 @@ public static class DiExtensions
         });
 
         services.AddScoped<IValidator<CreateLocationDto>, CreateLocationValidator>();
-        services.AddScoped<ILocationsService, LocationsService>();
+        services.AddScoped<ICommandHandler<Guid, CreateLocationCommand>, CreateLocationHandler>();
         services.AddScoped<ILocationsRepository, LocationsRepository>();
         
         return services;

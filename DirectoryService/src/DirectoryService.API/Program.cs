@@ -13,7 +13,8 @@ try
     
     var builder = WebApplication.CreateBuilder(args);
     
-    //string environment = builder.Environment.EnvironmentName;
+    string environment = builder.Environment.EnvironmentName;
+    builder.Configuration.AddJsonFile($"appsettings.{environment}.json", true, true);
 
     builder.Services.AddConfigurations(builder.Configuration);
 
