@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Core.Locations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -10,9 +11,10 @@ namespace DirectoryService.Infrastructure
     {
         private readonly ILogger<LocationsRepository> logger;
         private readonly DirectoryServiceDbContext directoryServiceDbContext;
+        private ILocationsRepository _locationsRepositoryImplementation;
 
         public LocationsRepository(
-            ILogger<LocationsRepository> logger, 
+            ILogger<LocationsRepository> logger,
             DirectoryServiceDbContext directoryServiceDbContext)
         {
             this.logger = logger;
@@ -35,6 +37,33 @@ namespace DirectoryService.Infrastructure
             }
 
             return location.Id;
+        }
+
+        public async Task<Result<string, Error>> SearchLocationName(string locationName,
+            CancellationToken cancellationToken)
+        {
+            var result = await directoryServiceDbContext.Locations
+                .Where(l => l.Name.Name == locationName)
+                .Select(l => l.Name.Name)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (result is null)
+                return locationName;
+
+            return Error.Validation(null, "Name already exists", "name");
+        }
+
+        public async Task<Result<Address, Error>> SearchAddress(Address address, CancellationToken cancellationToken)
+        {
+            var result = await directoryServiceDbContext.Locations
+                .Where(a=>a.Address == address)
+                .Select(a => a.Address)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (result is null)
+                return address;
+            
+            return Error.Validation(null, "Address already exists", "address");
         }
     }
 }
