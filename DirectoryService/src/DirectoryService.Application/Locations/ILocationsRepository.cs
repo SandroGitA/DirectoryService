@@ -8,8 +8,7 @@ namespace DirectoryService.Application.Locations
     {
         Task<Result<Guid, Error>> Add(Location location, CancellationToken cancellationToken);
 
-        Task<Result<string, Error>> SearchLocationName(string locationName, CancellationToken cancellationToken);
-
-        Task<Result<Address, Error>> SearchAddress(Address address, CancellationToken cancellationToken);
+        Task<Result<T, Error>> GetByField<T>(string field, object value, string op,
+            CancellationToken ct = default);
     }
 }

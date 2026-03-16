@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Core.Locations;
 using Microsoft.EntityFrameworkCore;
@@ -39,31 +40,26 @@ namespace DirectoryService.Infrastructure
             return location.Id;
         }
 
-        public async Task<Result<string, Error>> SearchLocationName(string locationName,
+        public async Task<Result<T, Error>> GetByField<T>(string field, object value, string op,
             CancellationToken cancellationToken)
         {
-            var result = await directoryServiceDbContext.Locations
-                .Where(l => l.Name.Name == locationName)
-                .Select(l => l.Name.Name)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (result is null)
-                return locationName;
-
-            return Error.Validation(null, "Name already exists", "name");
-        }
-
-        public async Task<Result<Address, Error>> SearchAddress(Address address, CancellationToken cancellationToken)
-        {
-            var result = await directoryServiceDbContext.Locations
-                .Where(a=>a.Address == address)
-                .Select(a => a.Address)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (result is null)
-                return address;
+            var param = Expression.Parameter(typeof(Location), "l");
+            var property = Expression.Property(param, field);
             
-            return Error.Validation(null, "Address already exists", "address");
+            var convertedValue = Convert.ChangeType(value, property.Type);
+            var constant = Expression.Constant(convertedValue);
+            
+            var equal = Expression.Equal(property, constant);
+            
+            var lambda = Expression.Lambda<Func<Location, bool>>(equal, param);
+            var queryResult = await directoryServiceDbContext.Locations.FirstOrDefaultAsync(lambda, cancellationToken);
+
+            if (queryResult == null)
+                return Error.Failure(null, $"Could not find location with field {field}");
+
+            var result = typeof(T).GetProperty(field)?.GetValue(queryResult, null);
+
+            return (T)result;
         }
     }
 }

@@ -75,17 +75,20 @@ namespace DirectoryService.Application.Locations.CreateLocation
                 return errors;
             }
 
-            var searchLocationNameResult =
-                await locationRepository.SearchLocationName(locationNameResult.Value.Name, cancellationToken);
+            var searchLocationNameResult = await locationRepository
+                .GetByField<LocationName>("Name", command.CreateLocationDto.Name, "==", cancellationToken);
+
             if (!searchLocationNameResult.IsSuccess)
             {
                 var errors = searchLocationNameResult.Error.ToErrors();
                 logger.LogError("Errors occurred: {@Errors}", errors);
-
+                
                 return errors;
             }
+            
+            var searchAddressResult = await locationRepository
+                .GetByField<Address>("Address", command.CreateLocationDto.Address, "==", cancellationToken);
 
-            var searchAddressResult = await locationRepository.SearchAddress(addressResult.Value, cancellationToken);
             if (!searchAddressResult.IsSuccess)
             {
                 var errors = searchAddressResult.Error.ToErrors();
@@ -94,7 +97,7 @@ namespace DirectoryService.Application.Locations.CreateLocation
                 return errors;
             }
             
-            var location = Location.Create(locationNameResult.Value, addressResult.Value, timezoneResult.Value, true);
+            var location = Location.Create(searchLocationNameResult.Value, searchAddressResult.Value, timezoneResult.Value, true);
             
             var locationId = await locationRepository.Add(location, cancellationToken);
 
