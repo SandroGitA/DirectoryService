@@ -1,6 +1,8 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Core.Locations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -10,9 +12,10 @@ namespace DirectoryService.Infrastructure
     {
         private readonly ILogger<LocationsRepository> logger;
         private readonly DirectoryServiceDbContext directoryServiceDbContext;
+        private ILocationsRepository _locationsRepositoryImplementation;
 
         public LocationsRepository(
-            ILogger<LocationsRepository> logger, 
+            ILogger<LocationsRepository> logger,
             DirectoryServiceDbContext directoryServiceDbContext)
         {
             this.logger = logger;
@@ -35,6 +38,28 @@ namespace DirectoryService.Infrastructure
             }
 
             return location.Id;
+        }
+
+        public async Task<Result<T, Error>> GetByField<T>(string field, object value, string op,
+            CancellationToken cancellationToken)
+        {
+            var param = Expression.Parameter(typeof(Location), "l");
+            var property = Expression.Property(param, field);
+            
+            var convertedValue = Convert.ChangeType(value, property.Type);
+            var constant = Expression.Constant(convertedValue);
+            
+            var equal = Expression.Equal(property, constant);
+            
+            var lambda = Expression.Lambda<Func<Location, bool>>(equal, param);
+            var queryResult = await directoryServiceDbContext.Locations.FirstOrDefaultAsync(lambda, cancellationToken);
+
+            if (queryResult == null)
+                return Error.Failure(null, $"Could not find location with field {field}");
+
+            var result = typeof(T).GetProperty(field)?.GetValue(queryResult, null);
+
+            return (T)result;
         }
     }
 }
