@@ -1,0 +1,15 @@
+is_global = true
+
+# AsyncFixer: blocking calls in async methods and async void usage.
+dotnet_diagnostic.AsyncFixer02.severity = warning
+dotnet_diagnostic.AsyncFixer03.severity = warning
+
+# Meziantou: declare types in namespaces and matching files.
+dotnet_diagnostic.MA0047.severity = warning
+dotnet_diagnostic.MA0048.severity = warning
+
+# Sonar: declare types in namespaces and prefer async API calls.
+dotnet_diagnostic.S3903.severity = warning
+dotnet_diagnostic.S6966.severity = warning
+
+# Other rules, including Roslynator rules, retain their default severities.
